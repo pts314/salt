@@ -84,8 +84,11 @@ def install(packages, env=None, user=None):
         packages: list of packages comma delimited
     """
     packages = ' '.join(packages.split(','))
+    for i in packages:
+        if _already_installed(i,env):
+            packages.remove(i)
     #cross check to avoid the costly reinstall:
-    if not already_installed(env): 
+    if not _already_installed(env): 
         cmd = _create_conda_cmd('install', args=[packages, '--yes', '-q'], env=env, user=user)
         return _execcmd(cmd, user=user)
     else
@@ -133,6 +136,9 @@ def remove(packages, env=None, user=None):
         packages: list of packages comma delimited
     """
     packages = ' '.join(packages.split(','))
+    for i in packages:
+        if not _already_installed(i,env):
+            packages.remove(i)
     cmd = _create_conda_cmd('remove', args=[packages, '--yes', '-q'], env=env, user=user)
     return _execcmd(cmd, user=user, return0=True)
 
